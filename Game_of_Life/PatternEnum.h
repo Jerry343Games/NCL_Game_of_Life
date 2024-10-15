@@ -5,7 +5,7 @@
 #include <utility>
 #include <string>
 
-// 枚举类，包含所有的图案
+// Enum class that contains all the patterns
 enum class PatternType {
     BLOCK,
     BEEHIVE,
@@ -13,23 +13,23 @@ enum class PatternType {
     GLIDER
 };
 
-// 根据枚举类型返回对应的图案偏移
+// Returns the corresponding pattern offsets based on the enum type
 inline std::vector<std::pair<int, int>> getPatternOffsets(PatternType type) {
     switch (type) {
     case PatternType::BLOCK:
-        return { {0, 0}, {0, 1}, {1, 0}, {1, 1} }; // Block 图案
+        return { {0, 0}, {0, 1}, {1, 0}, {1, 1} }; // Block pattern
     case PatternType::BEEHIVE:
-        return { {0, 1}, {0, 2}, {1, 0}, {1, 3}, {2, 1}, {2, 2} }; // Beehive 图案
+        return { {0, 1}, {0, 2}, {1, 0}, {1, 3}, {2, 1}, {2, 2} }; // Beehive pattern
     case PatternType::TOAD:
-        return { {0, 1}, {0, 2}, {0, 3}, {1, 0}, {1, 1}, {1, 2} }; // Toad 图案
+        return { {0, 1}, {0, 2}, {0, 3}, {1, 0}, {1, 1}, {1, 2} }; // Toad pattern
     case PatternType::GLIDER:
-        return { {0, 1}, {1, 2}, {2, 0}, {2, 1}, {2, 2} }; // Glider 图案
+        return { {0, 1}, {1, 2}, {2, 0}, {2, 1}, {2, 2} }; // Glider pattern
     default:
-        return {}; // 默认返回空图案
+        return {}; // Default return empty pattern
     }
 }
 
-// 枚举类型转换为字符串的方法
+// Method to convert enum type to string
 inline std::string patternTypeToString(PatternType type) {
     switch (type) {
     case PatternType::BLOCK:
