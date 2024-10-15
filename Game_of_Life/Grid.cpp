@@ -1,20 +1,19 @@
 #include "Grid.h"
 #include <iostream>
-#include <cstdlib> // 用于随机数生成
-#include <ctime>   // 用于设置随机种子
+#include <cstdlib> // For random number generation
+#include <ctime>   // For setting random seed
 #include <iostream>
 #include <windows.h>
-#include <random>  // 使用 C++11 的随机库
+#include <random>  // Using C++11 random library
 
-
-// 构造函数
+// Constructor
 Grid::Grid(int r, int c) : rows(r), cols(c) {
-    cells.resize(rows, std::vector<Cell>(cols)); // 初始化细胞为死细胞
-    std::srand(std::time(nullptr)); // 使用当前时间作为随机数种子
+    cells.resize(rows, std::vector<Cell>(cols)); // Initialize cells as dead cells
+    std::srand(std::time(nullptr)); // Use the current time as a seed for random numbers
 }
 
 void Grid::randomizeCells(int numberOfCells) {
-    // 使用随机设备来生成种子，确保每次随机都是不同的
+    // Use random device to generate a seed, ensuring randomness in each run
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_int_distribution<> disRow(0, rows - 1);
@@ -22,7 +21,7 @@ void Grid::randomizeCells(int numberOfCells) {
 
     int placedCells = 0;
 
-    // 确保 numberOfCells 不超过网格的总数
+    // Ensure that numberOfCells does not exceed the total number of grid cells
     int totalCells = rows * cols;
     if (numberOfCells > totalCells) {
         numberOfCells = totalCells;
@@ -39,8 +38,7 @@ void Grid::randomizeCells(int numberOfCells) {
     }
 }
 
-
-// 获取某个位置的细胞
+// Get a cell at a specific position
 Cell& Grid::getCell(int row, int col) {
     return cells[row][col];
 }
@@ -53,13 +51,12 @@ int Grid::getColCount() const {
     return cols;
 }
 
-
-// 设置某个位置的细胞状态
+// Set the state of a cell at a specific position
 void Grid::setCellState(int row, int col, int state) {
     cells[row][col].setState(state);
 }
 
-// 演化步骤
+// Evolution step
 void Grid::evolve() {
     std::vector<std::vector<int>> newStates(rows, std::vector<int>(cols, 0));
 
@@ -67,41 +64,41 @@ void Grid::evolve() {
         for (int j = 0; j < cols; ++j) {
             int liveNeighbors = 0;
 
-            // 遍历周围8个方向
+            // Iterate through the 8 surrounding directions
             for (int di = -1; di <= 1; ++di) {
                 for (int dj = -1; dj <= 1; ++dj) {
-                    if (di == 0 && dj == 0) continue; // 跳过自己
+                    if (di == 0 && dj == 0) continue; // Skip the cell itself
 
                     int newRow = i + di;
                     int newCol = j + dj;
 
-                    // 检查边界
+                    // Check boundaries
                     if (newRow >= 0 && newRow < rows && newCol >= 0 && newCol < cols) {
                         liveNeighbors += cells[newRow][newCol].getState();
                     }
                 }
             }
 
-            // 根据Conway's Game of Life的规则更新状态
+            // Update state based on Conway's Game of Life rules
             if (cells[i][j].getState() == 1) {
-                // 活细胞
+                // Live cell
                 if (liveNeighbors < 2 || liveNeighbors > 3) {
-                    newStates[i][j] = 0; // 细胞死亡
+                    newStates[i][j] = 0; // Cell dies
                 }
                 else {
-                    newStates[i][j] = 1; // 保持活状态
+                    newStates[i][j] = 1; // Remain alive
                 }
             }
             else {
-                // 死细胞
+                // Dead cell
                 if (liveNeighbors == 3) {
-                    newStates[i][j] = 1; // 死细胞变成活细胞
+                    newStates[i][j] = 1; // Dead cell becomes alive
                 }
             }
         }
     }
 
-    // 更新细胞状态
+    // Update cell states
     for (int i = 0; i < rows; ++i) {
         for (int j = 0; j < cols; ++j) {
             cells[i][j].setState(newStates[i][j]);
@@ -109,9 +106,9 @@ void Grid::evolve() {
     }
 }
 
-// 打印当前网格状态
+// Print the current grid state
 void Grid::printGrid() const {
-    // 打印顶行的点
+    // Print the top row of dots
     for (int j = 0; j <= cols; ++j) {
         std::cout << ". ";
     }
@@ -124,7 +121,7 @@ void Grid::printGrid() const {
                 std::cout << "O";
             }
             else {
-                std::cout << " "; // 空格表示死细胞
+                std::cout << " "; // Space represents a dead cell
             }
             std::cout << ".";
         }
@@ -132,22 +129,20 @@ void Grid::printGrid() const {
     }
 }
 
-// 封装的随机演化功能
+// Encapsulated random evolution function
 void Grid::startRandomEvolution(int steps, int delay) {
     randomizeCells(100);
     for (int i = 0; i < steps; ++i) {
-        // 清屏
+        // Clear the screen
         system("cls");
 
-        // 打印当前网格状态
+        // Print the current grid state
         printGrid();
 
-        // 演化到下一代
+        // Evolve to the next generation
         evolve();
 
-        // 暂停一段时间
-        Sleep(delay); // Windows系统下暂停delay毫秒
+        // Pause for a certain amount of time
+        Sleep(delay); // Pause for delay milliseconds on Windows systems
     }
 }
-
-

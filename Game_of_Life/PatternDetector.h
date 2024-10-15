@@ -9,7 +9,7 @@ public:
     PatternDetector(Grid& grid);
     bool detectPattern(const Pattern& pattern, int generations, int startCells);
 
-    // 新增公共方法获取 grid 引用
+    // New public method to get a reference to the grid
     Grid& getGrid() {
         return grid;
     }
@@ -17,9 +17,9 @@ public:
 
 private:
     Grid& grid;
-    //bool checkPattern(const Pattern& pattern);
     bool isPatternAt(int row, int col, const Pattern& pattern);
 
 };
 
 #endif
+

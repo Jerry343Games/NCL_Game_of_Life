@@ -11,7 +11,7 @@
 bool detectPatternWithThread(PatternDetector& detector, const Pattern& pattern, int generations, int startCells, std::atomic<bool>& stopFlag, std::string& patternName) {
     int simulationCount = 0;
 
-    // 使用随机设备来生成种子，确保每个线程都是独立的
+    // Use random device to generate a seed, ensuring each thread is independent
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_int_distribution<> disRow(0, detector.getGrid().getRowCount() - 1);
@@ -21,7 +21,7 @@ bool detectPatternWithThread(PatternDetector& detector, const Pattern& pattern, 
         simulationCount++;
         detector.getGrid().randomizeCells(startCells);
 
-        // 保存初始状态
+        // Save the initial state
         std::vector<Grid> simulationHistory;
         simulationHistory.push_back(detector.getGrid());
 
@@ -30,9 +30,9 @@ bool detectPatternWithThread(PatternDetector& detector, const Pattern& pattern, 
             simulationHistory.push_back(detector.getGrid());
 
             if (detector.checkPattern(pattern)) {
-                stopFlag = true;  // 设置停止标志，停止其他线程
+                stopFlag = true;  // Set the stop flag to stop other threads
 
-                // 打印找到的图案过程
+                // Print the process where the pattern was found
                 std::cout << "Pattern (" << patternName << ") found in simulation " << simulationCount << " at generation " << gen + 1 << std::endl;
                 for (size_t i = 0; i < simulationHistory.size(); ++i) {
                     std::cout << "Generation " << i << ":" << std::endl;
@@ -42,7 +42,7 @@ bool detectPatternWithThread(PatternDetector& detector, const Pattern& pattern, 
                 return true;
             }
 
-            // 如果另一个线程找到目标，则停止当前线程
+            // Stop the current thread if another thread found the target
             if (stopFlag) {
                 return false;
             }
@@ -51,12 +51,12 @@ bool detectPatternWithThread(PatternDetector& detector, const Pattern& pattern, 
     return false;
 }
 
-void FindWithTwoPattern(PatternType pattern1Type, PatternType pattern2Type ,Grid grid) {
-    // 定义两个图案进行检测
+void FindWithTwoPattern(PatternType pattern1Type, PatternType pattern2Type, Grid grid) {
+    // Define two patterns for detection
     //PatternType pattern1Type = PatternType::TOAD;
     //PatternType pattern2Type = PatternType::BEEHIVE;
 
-    // 获取两个图案的偏移量
+    // Get the offsets for both patterns
     Pattern pattern1;
     pattern1.offsets = getPatternOffsets(pattern1Type);
 
@@ -71,11 +71,11 @@ void FindWithTwoPattern(PatternType pattern1Type, PatternType pattern2Type ,Grid
     std::string pattern1Name = patternTypeToString(pattern1Type);
     std::string pattern2Name = patternTypeToString(pattern2Type);
 
-    // 使用线程并发检测两个图案
+    // Use threads to concurrently detect both patterns
     std::future<bool> future1 = std::async(std::launch::async, detectPatternWithThread, std::ref(detector1), pattern1, 20, 30, std::ref(stopFlag), std::ref(pattern1Name));
     std::future<bool> future2 = std::async(std::launch::async, detectPatternWithThread, std::ref(detector2), pattern2, 20, 30, std::ref(stopFlag), std::ref(pattern2Name));
 
-    // 等待任意一个图案找到即可停止
+    // Wait for any one pattern to be found to stop
     if (future1.wait_for(std::chrono::milliseconds(100)) == std::future_status::ready) {
         future1.get();
     }
@@ -94,12 +94,12 @@ int main() {
 
     bool running = true;
     while (running) {
-        // 打印菜单
+        // Print menu
         std::cout << "====== Conway's Game of Life Menu ======" << std::endl;
-        std::cout << "1. 开始随机演化" << std::endl;
-        std::cout << "2. 待定" << std::endl;
-        std::cout << "3. 退出程序" << std::endl;
-        std::cout << "请选择一个选项（1-3）：\n";
+        std::cout << "1. Start random evolution" << std::endl;
+        std::cout << "2. Pending" << std::endl;
+        std::cout << "3. Exit program" << std::endl;
+        std::cout << "Please choose an option (1-3):\n";
 
         int choice;
         std::cin >> choice;
@@ -108,7 +108,7 @@ int main() {
         switch (choice) {
         case 1: {
             int steps, delay;
-            std::cout << "请输入演化的步数：";
+            std::cout << "Enter the number of steps for evolution: ";
             std::cin >> steps;
             grid.startRandomEvolution(steps, 200);
             break;
@@ -123,7 +123,7 @@ int main() {
             running = false;
             break;
         default:
-            std::cout << "无效的选择，请输入1-3之间的数字。" << std::endl;
+            std::cout << "Invalid choice, please enter a number between 1-3." << std::endl;
             break;
         }
     }

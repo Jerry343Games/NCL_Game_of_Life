@@ -8,29 +8,29 @@ PatternDetector::PatternDetector(Grid& grid) : grid(grid) {}
 bool PatternDetector::detectPattern(const Pattern& pattern, int generations, int startCells) {
     int simulationCount = 0;
 
-    // 继续随机模拟，直到找到匹配的图案
+    // Continue random simulations until a matching pattern is found
     while (true) {
         simulationCount++;
         grid.randomizeCells(startCells);
 
-        // 用于保存每次模拟的状态
+        // To store the state of each simulation
         std::vector<Grid> simulationHistory;
 
-        // 保存初始状态
+        // Save the initial state
         simulationHistory.push_back(grid);
 
         for (int gen = 0; gen < generations; ++gen) {
-            // 演化到下一代
+            // Evolve to the next generation
             grid.evolve();
 
-            // 保存演化后的状态
+            // Save the evolved state
             simulationHistory.push_back(grid);
 
-            // 检查是否找到匹配的图案
+            // Check if the matching pattern is found
             if (checkPattern(pattern)) {
                 std::cout << "Pattern found in simulation " << simulationCount << " at generation " << gen + 1 << ":" << std::endl;
 
-                // 打印完整的模拟过程
+                // Print the full simulation process
                 for (int step = 0; step <= gen + 1; ++step) {
                     std::cout << "Generation " << step << ":" << std::endl;
                     simulationHistory[step].printGrid();
@@ -55,23 +55,23 @@ bool PatternDetector::checkPattern(const Pattern& pattern) {
 }
 
 bool PatternDetector::isPatternAt(int row, int col, const Pattern& pattern) {
-    // 确保图案的所有偏移位置都是活细胞
+    // Ensure that all offset positions of the pattern are live cells
     for (const auto& offset : pattern.offsets) {
         int newRow = row + offset.first;
         int newCol = col + offset.second;
 
-        // 检查边界条件
+        // Check boundary conditions
         if (newRow < 0 || newRow >= grid.getRowCount() || newCol < 0 || newCol >= grid.getColCount()) {
             return false;
         }
 
-        // 检查对应位置是否是活细胞
+        // Check if the corresponding position is a live cell
         if (grid.getCell(newRow, newCol).getState() == 0) {
             return false;
         }
     }
 
-    // 确保图案之外的相邻细胞都是死细胞
+    // Ensure that adjacent cells outside the pattern are dead cells
     for (const auto& offset : pattern.offsets) {
         int newRow = row + offset.first;
         int newCol = col + offset.second;
@@ -82,7 +82,7 @@ bool PatternDetector::isPatternAt(int row, int col, const Pattern& pattern) {
                 int neighborRow = newRow + di;
                 int neighborCol = newCol + dj;
 
-                // 检查邻近的细胞是否是死细胞，并且不在图案标记内
+                // Check if neighboring cells are dead and not part of the pattern
                 if (neighborRow >= 0 && neighborRow < grid.getRowCount() && neighborCol >= 0 && neighborCol < grid.getColCount()) {
                     bool isInPattern = false;
                     for (const auto& innerOffset : pattern.offsets) {
