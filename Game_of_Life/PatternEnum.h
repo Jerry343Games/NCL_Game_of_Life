@@ -9,9 +9,15 @@
 enum class PatternType {
     BLOCK,
     BEEHIVE,
-    TOAD,
-    GLIDER
+    BLINK_0,
+    BLINK_1,
+    TOAD_0,
+    TOAD_1,
+    LWSS_0,
+    LWSS_1,
 };
+
+
 
 // Returns the corresponding pattern offsets based on the enum type
 inline std::vector<std::pair<int, int>> getPatternOffsets(PatternType type) {
@@ -20,10 +26,18 @@ inline std::vector<std::pair<int, int>> getPatternOffsets(PatternType type) {
         return { {0, 0}, {0, 1}, {1, 0}, {1, 1} }; // Block pattern
     case PatternType::BEEHIVE:
         return { {0, 1}, {0, 2}, {1, 0}, {1, 3}, {2, 1}, {2, 2} }; // Beehive pattern
-    case PatternType::TOAD:
-        return { {0, 1}, {0, 2}, {0, 3}, {1, 0}, {1, 1}, {1, 2} }; // Toad pattern
-    case PatternType::GLIDER:
-        return { {0, 1}, {1, 2}, {2, 0}, {2, 1}, {2, 2} }; // Glider pattern
+    case PatternType::BLINK_0:
+        return { {0, 0}, {0, 1}, {0, 2} };//Blink pattern
+    case PatternType::BLINK_1:
+        return { {1, 0}, {2, 0}, {3, 0} };
+    case PatternType::TOAD_0:
+        return { {0, 1}, {0, 2}, {0, 3}, {1, 0}, {1, 1}, {1, 2} }; // Toad pattern 0
+    case PatternType::TOAD_1:
+        return { {0, 3}, {1, 0}, {1, 4}, {2, 0}, {2, 4}, {3, 1} }; // Toad pattern 1
+    case PatternType::LWSS_0:
+        return { {0, 0}, {0, 3}, {1, 4}, {2, 0}, {2, 4},{3, 1}, {3, 2}, {3, 3}, {3, 4} }; // Spaceship pattern
+    case PatternType::LWSS_1:
+        return { {0, 2}, {0, 3}, {1, 0}, {1, 1}, {1, 3},{1, 4}, {2, 0}, {2, 1}, {2, 2}, {2, 3}, {3, 1}, {3, 2} }; // Spaceship pattern
     default:
         return {}; // Default return empty pattern
     }
@@ -36,10 +50,18 @@ inline std::string patternTypeToString(PatternType type) {
         return "BLOCK";
     case PatternType::BEEHIVE:
         return "BEEHIVE";
-    case PatternType::TOAD:
-        return "TOAD";
-    case PatternType::GLIDER:
-        return "GLIDER";
+    case PatternType::BLINK_0:
+        return "BLINK_0";
+    case PatternType::BLINK_1:
+        return "BLINK_1";
+    case PatternType::TOAD_0:
+        return "TOAD_0";
+    case PatternType::TOAD_1:
+        return "TOAD_1";
+    case PatternType::LWSS_0:
+        return "LWSS_0";
+    case PatternType::LWSS_1:
+        return "LWSS_1";
     default:
         return "UNKNOWN";
     }

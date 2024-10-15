@@ -97,7 +97,7 @@ int main() {
         // Print menu
         std::cout << "====== Conway's Game of Life Menu ======" << std::endl;
         std::cout << "1. Start random evolution" << std::endl;
-        std::cout << "2. Pending" << std::endl;
+        std::cout << "2. Searching pattern" << std::endl;
         std::cout << "3. Exit program" << std::endl;
         std::cout << "Please choose an option (1-3):\n";
 
@@ -115,7 +115,7 @@ int main() {
         }
         case 2: {
 
-            FindWithTwoPattern(PatternType::TOAD, PatternType::BEEHIVE, grid);
+            FindWithTwoPattern(PatternType::TOAD_0, PatternType::TOAD_1, grid);
 
             break;
         }
