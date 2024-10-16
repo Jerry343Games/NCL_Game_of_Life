@@ -7,11 +7,13 @@
 #include <future>
 #include <atomic>
 #include <random>
+#include <vector>
+#include <tuple>
 
+// 检测图案的线程函数
 bool detectPatternWithThread(PatternDetector& detector, const Pattern& pattern, int generations, int startCells, std::atomic<bool>& stopFlag, std::string& patternName) {
     int simulationCount = 0;
 
-    // Use random device to generate a seed, ensuring each thread is independent
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_int_distribution<> disRow(0, detector.getGrid().getRowCount() - 1);
@@ -21,7 +23,6 @@ bool detectPatternWithThread(PatternDetector& detector, const Pattern& pattern, 
         simulationCount++;
         detector.getGrid().randomizeCells(startCells);
 
-        // Save the initial state
         std::vector<Grid> simulationHistory;
         simulationHistory.push_back(detector.getGrid());
 
@@ -30,19 +31,15 @@ bool detectPatternWithThread(PatternDetector& detector, const Pattern& pattern, 
             simulationHistory.push_back(detector.getGrid());
 
             if (detector.checkPattern(pattern)) {
-                stopFlag = true;  // Set the stop flag to stop other threads
-
-                // Print the process where the pattern was found
+                stopFlag = true;
                 std::cout << "Pattern (" << patternName << ") found in simulation " << simulationCount << " at generation " << gen + 1 << std::endl;
                 for (size_t i = 0; i < simulationHistory.size(); ++i) {
                     std::cout << "Generation " << i << ":" << std::endl;
                     simulationHistory[i].printGrid();
                 }
-
                 return true;
             }
 
-            // Stop the current thread if another thread found the target
             if (stopFlag) {
                 return false;
             }
@@ -51,41 +48,30 @@ bool detectPatternWithThread(PatternDetector& detector, const Pattern& pattern, 
     return false;
 }
 
-void FindWithTwoPattern(PatternType pattern1Type, PatternType pattern2Type, Grid grid) {
-    // Define two patterns for detection
-    //PatternType pattern1Type = PatternType::TOAD;
-    //PatternType pattern2Type = PatternType::BEEHIVE;
-
-    // Get the offsets for both patterns
-    Pattern pattern1;
-    pattern1.offsets = getPatternOffsets(pattern1Type);
-
-    Pattern pattern2;
-    pattern2.offsets = getPatternOffsets(pattern2Type);
-
-    PatternDetector detector1(grid);
-    PatternDetector detector2(grid);
-
+// 使用可变参数模板，接收任意数量的图案类型
+template <typename... PatternTypes>
+void FindWithPatterns(Grid grid, PatternTypes... patternTypes) {
     std::atomic<bool> stopFlag(false);
+    std::vector<std::future<bool>> futures;
 
-    std::string pattern1Name = patternTypeToString(pattern1Type);
-    std::string pattern2Name = patternTypeToString(pattern2Type);
+    auto detectPattern = [&](PatternType patternType) {
+        Pattern pattern;
+        pattern.offsets = getPatternOffsets(patternType);
+        PatternDetector detector(grid);
+        std::string patternName = patternTypeToString(patternType);
+        futures.push_back(std::async(std::launch::async, detectPatternWithThread, std::ref(detector), pattern, 20, 30, std::ref(stopFlag), std::ref(patternName)));
+        };
 
-    // Use threads to concurrently detect both patterns
-    std::future<bool> future1 = std::async(std::launch::async, detectPatternWithThread, std::ref(detector1), pattern1, 20, 30, std::ref(stopFlag), std::ref(pattern1Name));
-    std::future<bool> future2 = std::async(std::launch::async, detectPatternWithThread, std::ref(detector2), pattern2, 20, 30, std::ref(stopFlag), std::ref(pattern2Name));
+    // 使用fold expression展开图案参数，并启动线程
+    (detectPattern(patternTypes), ...);
 
-    // Wait for any one pattern to be found to stop
-    if (future1.wait_for(std::chrono::milliseconds(100)) == std::future_status::ready) {
-        future1.get();
-    }
-    else if (future2.wait_for(std::chrono::milliseconds(100)) == std::future_status::ready) {
-        future2.get();
+    // 等待任何一个图案被检测到
+    for (auto& future : futures) {
+        future.wait();
     }
 }
 
 int main() {
-
     std::srand(static_cast<unsigned int>(std::time(nullptr)));
 
     int rows = 30;
@@ -94,7 +80,6 @@ int main() {
 
     bool running = true;
     while (running) {
-        // Print menu
         std::cout << "====== Conway's Game of Life Menu ======" << std::endl;
         std::cout << "1. Start random evolution" << std::endl;
         std::cout << "2. Searching pattern" << std::endl;
@@ -103,7 +88,6 @@ int main() {
 
         int choice;
         std::cin >> choice;
-
 
         switch (choice) {
         case 1: {
@@ -114,9 +98,8 @@ int main() {
             break;
         }
         case 2: {
-
-            FindWithTwoPattern(PatternType::TOAD_0, PatternType::TOAD_1, grid);
-
+            // 在这里传递任意数量的PatternType
+            FindWithPatterns(grid, PatternType::TOAD_0, PatternType::TOAD_1, PatternType::BEEHIVE);
             break;
         }
         case 3:
