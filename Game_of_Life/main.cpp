@@ -10,66 +10,6 @@
 #include <vector>
 #include <tuple>
 
-// 检测图案的线程函数
-bool detectPatternWithThread(PatternDetector& detector, const Pattern& pattern, int generations, int startCells, std::atomic<bool>& stopFlag, std::string& patternName) {
-    int simulationCount = 0;
-
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_int_distribution<> disRow(0, detector.getGrid().getRowCount() - 1);
-    std::uniform_int_distribution<> disCol(0, detector.getGrid().getColCount() - 1);
-
-    while (!stopFlag) {
-        simulationCount++;
-        detector.getGrid().randomizeCells(startCells);
-
-        std::vector<Grid> simulationHistory;
-        simulationHistory.push_back(detector.getGrid());
-
-        for (int gen = 0; gen < generations; ++gen) {
-            detector.getGrid().evolve();
-            simulationHistory.push_back(detector.getGrid());
-
-            if (detector.checkPattern(pattern)) {
-                stopFlag = true;
-                std::cout << "Pattern (" << patternName << ") found in simulation " << simulationCount << " at generation " << gen + 1 << std::endl;
-                for (size_t i = 0; i < simulationHistory.size(); ++i) {
-                    std::cout << "Generation " << i << ":" << std::endl;
-                    simulationHistory[i].printGrid();
-                }
-                return true;
-            }
-
-            if (stopFlag) {
-                return false;
-            }
-        }
-    }
-    return false;
-}
-
-// 使用可变参数模板，接收任意数量的图案类型
-template <typename... PatternTypes>
-void FindWithPatterns(Grid grid, PatternTypes... patternTypes) {
-    std::atomic<bool> stopFlag(false);
-    std::vector<std::future<bool>> futures;
-
-    auto detectPattern = [&](PatternType patternType) {
-        Pattern pattern;
-        pattern.offsets = getPatternOffsets(patternType);
-        PatternDetector detector(grid);
-        std::string patternName = patternTypeToString(patternType);
-        futures.push_back(std::async(std::launch::async, detectPatternWithThread, std::ref(detector), pattern, 20, 30, std::ref(stopFlag), std::ref(patternName)));
-        };
-
-    // 使用fold expression展开图案参数，并启动线程
-    (detectPattern(patternTypes), ...);
-
-    // 等待任何一个图案被检测到
-    for (auto& future : futures) {
-        future.wait();
-    }
-}
 
 int main() {
     std::srand(static_cast<unsigned int>(std::time(nullptr)));
@@ -100,12 +40,14 @@ int main() {
         case 2: {
 
             std::vector<Pattern> spaceshipSequence = {
-                {getPatternOffsets(PatternType::LWSS_0)},
-                {getPatternOffsets(PatternType::LWSS_1)},
+                {getPatternOffsets(PatternType::GLIDER_0)},
+                {getPatternOffsets(PatternType::GLIDER_1)},
+                {getPatternOffsets(PatternType::GLIDER_2)},
+                {getPatternOffsets(PatternType::GLIDER_3)}
             };
 
             PatternDetector detector(grid);
-            detector.detectPatternSequence(spaceshipSequence, 20, 30);
+            detector.detectPatternSequence(spaceshipSequence, 30, 20);
             break;
         }
         case 3:

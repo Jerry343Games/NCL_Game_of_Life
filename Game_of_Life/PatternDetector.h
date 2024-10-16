@@ -20,7 +20,7 @@ public:
 private:
     Grid& grid;
     bool isPatternAt(int row, int col, const Pattern& pattern);
-
+    std::pair<int, int> lockedPosition = { -1, -1 };  // 新增的锁定位置
 };
 
 #endif
