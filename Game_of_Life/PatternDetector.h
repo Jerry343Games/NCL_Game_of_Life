@@ -14,6 +14,8 @@ public:
         return grid;
     }
     bool checkPattern(const Pattern& pattern);
+    bool detectPatternSequence(const std::vector<Pattern>& patternSequence, int generations, int startCells);
+
 
 private:
     Grid& grid;

@@ -101,3 +101,44 @@ bool PatternDetector::isPatternAt(int row, int col, const Pattern& pattern) {
 
     return true;
 }
+
+bool PatternDetector::detectPatternSequence(const std::vector<Pattern>& patternSequence, int generations, int startCells) {
+    int sequenceIndex = 0;
+    int simulationCount = 0;
+
+    while (true) {
+        simulationCount++;
+        grid.randomizeCells(startCells);
+
+        // 用于保存模拟的状态
+        std::vector<Grid> simulationHistory;
+        simulationHistory.push_back(grid);  // 保存初始状态
+
+        for (int gen = 0; gen < generations; ++gen) {
+            grid.evolve();
+            simulationHistory.push_back(grid);  // 保存每次演化后的状态
+
+            // 检查是否找到了序列中的下一个图案
+            if (checkPattern(patternSequence[sequenceIndex])) {
+                sequenceIndex++;
+                if (sequenceIndex == patternSequence.size()) {
+                    // 成功检测到完整的图案序列
+                    std::cout << "成功检测到图案序列，在模拟 " << simulationCount
+                        << " 中的第 " << gen + 1 << " 代" << std::endl;
+
+                    // 打印完整的模拟过程
+                    for (size_t step = 0; step < simulationHistory.size(); ++step) {
+                        std::cout << "第 " << step << " 代:" << std::endl;
+                        simulationHistory[step].printGrid();
+                    }
+
+                    return true;
+                }
+            }
+            else {
+                sequenceIndex = 0;  // 如果检测失败，重置序列索引
+            }
+        }
+    }
+    return false;
+}

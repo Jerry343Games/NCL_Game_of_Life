@@ -98,8 +98,14 @@ int main() {
             break;
         }
         case 2: {
-            // 在这里传递任意数量的PatternType
-            FindWithPatterns(grid, PatternType::TOAD_0, PatternType::TOAD_1, PatternType::BEEHIVE);
+
+            std::vector<Pattern> spaceshipSequence = {
+                {getPatternOffsets(PatternType::LWSS_0)},
+                {getPatternOffsets(PatternType::LWSS_1)},
+            };
+
+            PatternDetector detector(grid);
+            detector.detectPatternSequence(spaceshipSequence, 20, 30);
             break;
         }
         case 3:
