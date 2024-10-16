@@ -7,13 +7,11 @@
 class PatternDetector {
 public:
     PatternDetector(Grid& grid);
-    bool detectPattern(const Pattern& pattern, int generations, int startCells);
 
     // New public method to get a reference to the grid
     Grid& getGrid() {
         return grid;
     }
-    bool checkPattern(const Pattern& pattern);
     bool detectPatternSequence(const std::vector<Pattern>& patternSequence, int generations, int startCells);
 
 

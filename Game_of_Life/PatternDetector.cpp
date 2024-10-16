@@ -5,54 +5,7 @@
 
 PatternDetector::PatternDetector(Grid& grid) : grid(grid) {}
 
-bool PatternDetector::detectPattern(const Pattern& pattern, int generations, int startCells) {
-    int simulationCount = 0;
 
-    // 继续随机模拟，直到找到匹配的图案
-    while (true) {
-        simulationCount++;
-        grid.randomizeCells(startCells);
-
-        // 用于保存每次模拟的状态
-        std::vector<Grid> simulationHistory;
-
-        // 保存初始状态
-        simulationHistory.push_back(grid);
-
-        for (int gen = 0; gen < generations; ++gen) {
-            // 演化到下一代
-            grid.evolve();
-
-            // 保存演化后的状态
-            simulationHistory.push_back(grid);
-
-            // 检查是否找到匹配的图案
-            if (checkPattern(pattern)) {
-                std::cout << "Pattern found in simulation " << simulationCount << " at generation " << gen + 1 << ":" << std::endl;
-
-                // 打印完整的模拟过程
-                for (int step = 0; step <= gen + 1; ++step) {
-                    std::cout << "Generation " << step << ":" << std::endl;
-                    simulationHistory[step].printGrid();
-                }
-
-                return true;
-            }
-        }
-    }
-}
-
-
-bool PatternDetector::checkPattern(const Pattern& pattern) {
-    for (int i = 0; i < grid.getRowCount(); ++i) {
-        for (int j = 0; j < grid.getColCount(); ++j) {
-            if (isPatternAt(i, j, pattern)) {
-                return true;
-            }
-        }
-    }
-    return false;
-}
 
 bool PatternDetector::isPatternAt(int row, int col, const Pattern& pattern) {
     // 确保图案的所有偏移位置都是活细胞
