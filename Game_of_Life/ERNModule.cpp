@@ -7,28 +7,6 @@
 #include <random>
 #include <iostream>
 
-// Calculate the maximum grid cells required for a Pattern
-int getMaxGrid(SequenceType sequenceType) {
-    std::vector<Pattern> patterns = getPatternSequence(sequenceType);
-    int maxGridCells = 0;
-
-    for (const Pattern& pattern : patterns) {
-        int maxRow = 0;
-        int maxCol = 0;
-
-        // Iterate through the offsets in each Pattern to find the maximum row and column offset
-        for (const auto& offset : pattern.offsets) {
-            maxRow = std::max(maxRow, offset.first);
-            maxCol = std::max(maxCol, offset.second);
-        }
-
-        // Calculate the minimum grid size required for the current Pattern (rows * columns)
-        int gridCells = (maxRow + 1) * (maxCol + 1);  // +1 because indexing starts from 0
-        maxGridCells = std::max(maxGridCells, gridCells);  // Keep the maximum grid size
-    }
-
-    return maxGridCells;
-}
 
 // Return the maximum row and column required for a given SequenceType
 std::pair<int, int> getMaxRowCol(SequenceType sequenceType) {

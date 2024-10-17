@@ -3,6 +3,7 @@
 
 #include <vector>
 #include "Cell.h"
+#include <string>;
 
 class Grid {
 private:
@@ -35,6 +36,10 @@ public:
     int getColCount() const;
 
     void clearGrid();
+
+    void saveGridToFile(const std::string& filename) const;
+
+    void loadGridFromFile(const std::string& filename);
 
 };
 

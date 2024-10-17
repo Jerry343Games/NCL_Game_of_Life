@@ -121,27 +121,35 @@ bool PatternDetector::detectPatternSequence(const std::vector<Pattern>& patternS
     return false;
 }
 
-bool PatternDetector::detectFirstPattern(const std::vector<Pattern>& sequence1, const std::vector<Pattern>& sequence2, int generations, int startCells) {
+bool PatternDetector::detectFirstPattern(SequenceType sequenceType1, SequenceType sequenceType2, int generations, int startCells) {
+    // Get the pattern sequences for both input SequenceTypes
+    std::vector<Pattern> sequence1 = getPatternSequence(sequenceType1);
+    std::vector<Pattern> sequence2 = getPatternSequence(sequenceType2);
+
+    // Save the initial grid state before the simulation
+    Grid initialGrid = grid;  // Assuming you have a proper copy constructor for Grid
+
     // Use async to run both pattern detections in parallel
     auto future1 = std::async(&PatternDetector::detectPatternSequence, this, sequence1, generations, startCells);
     auto future2 = std::async(&PatternDetector::detectPatternSequence, this, sequence2, generations, startCells);
 
-    // Wait for either of the pattern detection tasks to complete
-    while (future1.wait_for(std::chrono::milliseconds(10)) != std::future_status::ready &&
-        future2.wait_for(std::chrono::milliseconds(10)) != std::future_status::ready) {
-        // Keep checking until one of them finishes
-    }
+
+
 
     // Check which pattern was detected first
     bool result1 = future1.get();
     bool result2 = future2.get();
 
     if (result1) {
-        std::cout << "Pattern Sequence 1 detected first!" << std::endl;
+        std::cout << "Pattern Sequence " << sequenceToString(sequenceType1) << " detected first!" << std::endl;
+        // Save the initial grid state to a file when detection is successful
+        initialGrid.saveGridToFile("AutoSave_" + sequenceToString(sequenceType1) + ".txt");
         return true;
     }
     if (result2) {
-        std::cout << "Pattern Sequence 2 detected first!" << std::endl;
+        std::cout << "Pattern Sequence " << sequenceToString(sequenceType2) << " detected first!" << std::endl;
+        // Save the initial grid state to a file when detection is successful
+        initialGrid.saveGridToFile("AutoSave_" + sequenceToString(sequenceType2) + ".txt");
         return false;
     }
 
@@ -149,6 +157,9 @@ bool PatternDetector::detectFirstPattern(const std::vector<Pattern>& sequence1, 
 
     return false;
 }
+
+
+
 
 bool PatternDetector::isPatternDetectedInGrid(const Pattern& pattern) {
     for (int row = 0; row < grid.getRowCount(); ++row) {

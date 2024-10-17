@@ -3,6 +3,7 @@
 
 #include "Grid.h"
 #include "Pattern.h"
+#include "PatternEnum.h"
 
 class PatternDetector {
 public:
@@ -14,11 +15,12 @@ public:
     }
     bool detectPatternSequence(const std::vector<Pattern>& patternSequence, int generations, int startCells);
 
-    bool detectFirstPattern(const std::vector<Pattern>& sequence1, const std::vector<Pattern>& sequence2, int generations, int startCells);
+    bool detectFirstPattern(SequenceType sequenceType1, SequenceType sequenceType2, int generations, int startCells);
 
     bool isPatternAt(int row, int col, const Pattern& pattern);
 
     bool isPatternDetectedInGrid(const Pattern& pattern);
+
 private:
     Grid& grid;
     

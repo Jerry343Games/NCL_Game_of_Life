@@ -4,6 +4,7 @@
 #include <vector>
 #include <utility>
 #include <string>
+#include <iostream>
 
 // Enum class that contains all the patterns
 enum class PatternType {
@@ -29,7 +30,7 @@ enum class SequenceType {
     BLINKER,
     TOAD,
     GLIDER,
-    SPACESHIP,
+    LWSS,
 };
 
 
@@ -103,7 +104,7 @@ inline std::vector<Pattern> getPatternSequence(SequenceType sequenceType) {
             {getPatternOffsets(PatternType::GLIDER_2)},
             {getPatternOffsets(PatternType::GLIDER_3)}
         };
-    case SequenceType::SPACESHIP:
+    case SequenceType::LWSS:
         return {
             {getPatternOffsets(PatternType::LWSS_0)},
             {getPatternOffsets(PatternType::LWSS_1)},
@@ -115,7 +116,7 @@ inline std::vector<Pattern> getPatternSequence(SequenceType sequenceType) {
     }
 }
 
-// Method to convert enum type to string
+// convert methods 
 inline std::string sequenceToString(SequenceType type) {
     switch (type) {
     case SequenceType::BLOCK:
@@ -128,10 +129,35 @@ inline std::string sequenceToString(SequenceType type) {
         return "TOAD";
     case SequenceType::GLIDER:
         return "GLIDER";
-    case SequenceType::SPACESHIP:
+    case SequenceType::LWSS:
         return "SPACESHIP";
     default:
         return "UNKNOWN";
+    }
+}
+
+inline SequenceType getSequenceTypeFromInput(const std::string& input) {
+    if (input == "BLOCK") {
+        return SequenceType::BLOCK;
+    }
+    if (input == "BEEHIVE") {
+        return SequenceType::BEEHIVE;
+    }
+    if (input == "TOAD") {
+        return SequenceType::TOAD;
+    }
+    else if (input == "BLINKER") {
+        return SequenceType::BLINKER;
+    }
+    else if (input == "GLIDER") {
+        return SequenceType::GLIDER;
+    }
+    else if (input == "LWSS") {
+        return SequenceType::LWSS;
+    }
+    else {
+        std::cout << "Unknown input, use default sequence BLOCK" << std::endl;
+        return SequenceType::BLOCK;
     }
 }
 

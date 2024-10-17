@@ -5,11 +5,70 @@
 #include <iostream>
 #include <windows.h>
 #include <random>  // Using C++11 random library
+#include <fstream>
+#include <filesystem>
+#include <thread>
+#include <chrono>
+#include <conio.h>
 
 // Constructor
 Grid::Grid(int r, int c) : rows(r), cols(c) {
     cells.resize(rows, std::vector<Cell>(cols)); // Initialize cells as dead cells
     std::srand(std::time(nullptr)); // Use the current time as a seed for random numbers
+}
+
+
+// Method to save the grid's alive cell coordinates to a file
+void Grid::saveGridToFile(const std::string& filename) const {
+    // Ensure that the Save directory exists
+    std::filesystem::create_directories("Save");
+
+    // Open the file in the Save/ folder for writing
+    std::ofstream file("Save/" + filename);
+
+    if (!file.is_open()) {
+        std::cerr << "Failed to open file for saving: " << filename << std::endl;
+        return;
+    }
+
+    // Iterate through the grid and save the coordinates of alive cells
+    for (int row = 0; row < rows; ++row) {
+        for (int col = 0; col < cols; ++col) {
+            if (cells[row][col].getState() == 1) {  // If the cell is alive
+                file << row << " " << col << std::endl;  // Save the row and column of the alive cell
+            }
+        }
+    }
+
+    file.close();
+    std::cout << "Grid saved to Save/" << filename << std::endl;
+}
+
+void Grid::loadGridFromFile(const std::string& filename) {
+    // Open the file for reading
+    std::ifstream file("Save/" + filename);
+
+    if (!file.is_open()) {
+        std::cerr << "Failed to open file: " << filename << std::endl;
+        return;
+    }
+
+    // Clear the current grid state
+    clearGrid();
+
+    // Read the alive cell coordinates from the file and set them in the grid
+    int row, col;
+    while (file >> row >> col) {
+        if (row >= 0 && row < rows && col >= 0 && col < cols) {
+            cells[row][col].setState(1);  // Set the cell to alive
+        }
+        else {
+            std::cerr << "Invalid cell coordinates in file: (" << row << ", " << col << ")" << std::endl;
+        }
+    }
+
+    file.close();
+    std::cout << "Grid loaded from Save/" << filename << std::endl;
 }
 
 void Grid::randomizeCells(int numberOfCells) {
@@ -131,9 +190,12 @@ void Grid::printGrid() const {
 
 // Encapsulated random evolution function
 void Grid::startRandomEvolution(int steps, int delay) {
-    randomizeCells(100);
-    for (int i = 0; i < steps; ++i) {
-        // Clear the screen
+    // Randomize the grid initially
+    //randomizeCells(100);
+
+    // Evolve the grid step by step
+    for (int step = 0; step < steps; ++step) {
+        // Clear the screen (Windows specific; adapt for other platforms)
         system("cls");
 
         // Print the current grid state
@@ -142,8 +204,33 @@ void Grid::startRandomEvolution(int steps, int delay) {
         // Evolve to the next generation
         evolve();
 
-        // Pause for a certain amount of time
-        Sleep(delay); // Pause for delay milliseconds on Windows systems
+        // Pause for the specified delay (milliseconds)
+        std::this_thread::sleep_for(std::chrono::milliseconds(delay));
+
+        // Check if the user wants to pause and save
+        if (_kbhit()) {  // Check for a key press (Windows specific)
+            char key = _getch();
+            if (key == 'p' || key == 'P') {
+                std::cout << "\nPaused.\nPress M back to Menu\nDo you want to save the grid state? (y/n):\n ";
+                char saveChoice;
+                std::cin >> saveChoice;
+
+                if (saveChoice == 'y' || saveChoice == 'Y') {
+                    // Save the grid state
+                    std::string filename;
+                    std::cout << "Enter the filename to save the grid (e.g., grid_state.txt): ";
+                    std::cin >> filename;
+                    saveGridToFile(filename);  // Save the grid to file
+                }
+                else if (saveChoice == 'm'||saveChoice == 'M')
+                {
+                    return;
+                }
+
+                std::cout << "Press any key to resume the evolution..." << std::endl;
+                _getch();  // Wait for user to press any key to resume
+            }
+        }
     }
 }
 
@@ -154,3 +241,4 @@ void Grid::clearGrid() {
         }
     }
 }
+
