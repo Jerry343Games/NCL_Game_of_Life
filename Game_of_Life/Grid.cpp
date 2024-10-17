@@ -146,3 +146,11 @@ void Grid::startRandomEvolution(int steps, int delay) {
         Sleep(delay); // Pause for delay milliseconds on Windows systems
     }
 }
+
+void Grid::clearGrid() {
+    for (int i = 0; i < rows; ++i) {
+        for (int j = 0; j < cols; ++j) {
+            cells[i][j].setState(0);  // Set all cells to dead (0)
+        }
+    }
+}

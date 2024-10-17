@@ -65,7 +65,7 @@ int findMinCellsForPattern(int rows, int cols, int minCells, SequenceType sequen
     Grid grid(rows, cols);
     PatternDetector detector(grid);
 
-    // Get the target pattern sequence
+    // Get the target pattern sequence (we'll only check the first pattern in this example)
     std::vector<Pattern> patternSequence = getPatternSequence(sequenceType);
 
     // Iterate and increase the number of cells until the pattern is found
@@ -74,13 +74,38 @@ int findMinCellsForPattern(int rows, int cols, int minCells, SequenceType sequen
     while (true) {
         std::cout << "Trying with " << currentCells << " alive cells." << std::endl;
 
-        for (int attempt = 0; attempt < 10000; ++attempt) {
-            // Randomly generate the current number of alive cells
+        for (int attempt = 0; attempt < 1000000; ++attempt) {
+            // Clear the grid before starting a new attempt to avoid leftover cells
+            grid.clearGrid();
 
-            // Run pattern detection
-            if (detector.detectPatternSequence(patternSequence, 100, currentCells)) {
-                std::cout << "Found the target pattern cycle with " << currentCells << " alive cells!" << std::endl;
-                return currentCells;  // Return the number of cells when the pattern is found
+            // Randomly generate the current number of alive cells
+            grid.randomizeCells(currentCells);
+
+            // Store the initial grid state for this attempt
+            std::vector<Grid> evolutionSteps;  // Vector to store each grid state
+            evolutionSteps.push_back(grid);    // Store the initial state
+
+            // Run evolution for a fixed number of generations
+            for (int gen = 0; gen < 20; ++gen) {
+                grid.evolve();
+                evolutionSteps.push_back(grid);  // Store each evolved state
+
+                // Check if the current grid matches the target pattern
+                if (detector.isPatternDetectedInGrid(patternSequence[0])) {
+                    std::cout << "Found the target pattern in attempt " << attempt + 1 << " with " << currentCells << " alive cells!" << std::endl;
+
+                    // Print the initial state of the grid
+                    std::cout << "Initial grid state for attempt " << attempt + 1 << ":" << std::endl;
+                    evolutionSteps[0].printGrid();  // Print the initial grid state
+
+                    // Print each evolution step
+                    for (int i = 1; i < evolutionSteps.size(); ++i) {
+                        std::cout << "Grid after generation " << i << ":" << std::endl;
+                        evolutionSteps[i].printGrid();  // Print each evolved state
+                    }
+
+                    return currentCells;  // Return the number of cells when the pattern is found
+                }
             }
         }
 

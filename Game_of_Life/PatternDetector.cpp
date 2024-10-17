@@ -149,3 +149,14 @@ bool PatternDetector::detectFirstPattern(const std::vector<Pattern>& sequence1, 
 
     return false;
 }
+
+bool PatternDetector::isPatternDetectedInGrid(const Pattern& pattern) {
+    for (int row = 0; row < grid.getRowCount(); ++row) {
+        for (int col = 0; col < grid.getColCount(); ++col) {
+            if (isPatternAt(row, col, pattern)) {
+                return true;  // Pattern found
+            }
+        }
+    }
+    return false;  // Pattern not found
+}

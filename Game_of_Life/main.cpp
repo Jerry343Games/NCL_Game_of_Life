@@ -60,9 +60,9 @@ int main() {
             break;
         }
         case 5: {
-            SequenceType block = SequenceType::TOAD;
+            SequenceType sequence = SequenceType::SPACESHIP;
             //std::cout << getMaxRowCol(block).first <<" "<<getMaxRowCol(block).second << std::endl;
-            int minCell = findMinCellsForPattern(getMaxRowCol(block).first, getMaxRowCol(block).second, 3, block);
+            int minCell = findMinCellsForPattern(getMaxRowCol(sequence).first, getMaxRowCol(sequence).second, 4, sequence);
             std::cout << minCell << std::endl;
             break;
         }

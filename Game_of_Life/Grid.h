@@ -34,6 +34,8 @@ public:
 
     int getColCount() const;
 
+    void clearGrid();
+
 };
 
 #endif // GRID_H

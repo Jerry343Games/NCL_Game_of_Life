@@ -16,10 +16,12 @@ public:
 
     bool detectFirstPattern(const std::vector<Pattern>& sequence1, const std::vector<Pattern>& sequence2, int generations, int startCells);
 
+    bool isPatternAt(int row, int col, const Pattern& pattern);
 
+    bool isPatternDetectedInGrid(const Pattern& pattern);
 private:
     Grid& grid;
-    bool isPatternAt(int row, int col, const Pattern& pattern);
+    
     std::pair<int, int> lockedPosition = { -1, -1 };  // 新增的锁定位置
 };
 
