@@ -17,13 +17,16 @@ int main() {
     int rows = 30;
     int cols = 30;
     Grid grid(rows, cols);
+    
 
     bool running = true;
     while (running) {
         std::cout << "====== Conway's Game of Life Menu ======" << std::endl;
         std::cout << "1. Start random evolution" << std::endl;
-        std::cout << "2. Searching pattern" << std::endl;
-        std::cout << "3. Exit program" << std::endl;
+        std::cout << "2. Searching pattern Block & Beehive" << std::endl;
+        std::cout << "3. Searching pattern Blinker & Toad" << std::endl;
+        std::cout << "4. Searching pattern Glider & Spaceship" << std::endl;
+        std::cout << "5. Exit program" << std::endl;
         std::cout << "Please choose an option (1-3):\n";
 
         int choice;
@@ -38,19 +41,27 @@ int main() {
             break;
         }
         case 2: {
-
-            std::vector<Pattern> spaceshipSequence = {
-                {getPatternOffsets(PatternType::GLIDER_0)},
-                {getPatternOffsets(PatternType::GLIDER_1)},
-                {getPatternOffsets(PatternType::GLIDER_2)},
-                {getPatternOffsets(PatternType::GLIDER_3)}
-            };
-
             PatternDetector detector(grid);
-            detector.detectPatternSequence(spaceshipSequence, 30, 20);
+            if (detector.detectFirstPattern(getPatternSequence(SequenceType::BLOCK), getPatternSequence(SequenceType::BEEHIVE), 30, 30)) {
+                std::cout << "Block sequence detected first!" << std::endl;
+            }
             break;
         }
-        case 3:
+        case 3: {
+            PatternDetector detector(grid);
+            if (detector.detectFirstPattern(getPatternSequence(SequenceType::TOAD), getPatternSequence(SequenceType::BLINKER), 30, 30)) {
+                std::cout << "Toad sequence detected first!" << std::endl;
+            }
+            break;
+        }
+        case 4: {
+            PatternDetector detector(grid);
+            if (detector.detectFirstPattern(getPatternSequence(SequenceType::GLIDER), getPatternSequence(SequenceType::SPACESHIP), 30, 30)) {
+                std::cout << "Glider sequence detected first!" << std::endl;
+            }
+            break;
+        }
+        case 5:
             running = false;
             break;
         default:

@@ -2,10 +2,12 @@
 #include "PatternEnum.h"
 #include <iostream>
 #include <algorithm>
+#include <future>
+#include <iostream>
 
 PatternDetector::PatternDetector(Grid& grid) : grid(grid) {}
-
-
+bool isDetected = false;
+bool isPrinted = false;
 
 bool PatternDetector::isPatternAt(int row, int col, const Pattern& pattern) {
     // 确保图案的所有偏移位置都是活细胞
@@ -59,8 +61,9 @@ bool PatternDetector::detectPatternSequence(const std::vector<Pattern>& patternS
     int sequenceIndex = 0;
     int simulationCount = 0;
     bool patternLocked = false;
+    //isDetected = false;
 
-    while (true) {
+    while (true&&!isDetected) {
         simulationCount++;
         grid.randomizeCells(startCells);
 
@@ -85,20 +88,27 @@ bool PatternDetector::detectPatternSequence(const std::vector<Pattern>& patternS
                     if (patternLocked) break;
                 }
             }
-            else {
+            else if(!isDetected) {
                 // 使用锁定点继续检测后续图案
                 int lockedRow = lockedPosition.first;
                 int lockedCol = lockedPosition.second;
-                if (isPatternAt(lockedRow, lockedCol, patternSequence[sequenceIndex])) {
+                if (isPatternAt(lockedRow, lockedCol, patternSequence[sequenceIndex])&&!isDetected) {
                     sequenceIndex++;
-                    if (sequenceIndex == patternSequence.size()) {
-                        std::cout << "成功检测到图案序列，在模拟 " << simulationCount
-                            << " 中的第 " << gen + 1 << " 代" << std::endl;
-                        for (size_t step = 0; step < simulationHistory.size(); ++step) {
-                            std::cout << "第 " << step << " 代:" << std::endl;
-                            simulationHistory[step].printGrid();
+                    if (sequenceIndex == patternSequence.size()&&!isDetected) {
+                        isDetected = true;
+                        if (!isPrinted)
+                        {
+                            std::cout << "成功检测到图案序列，在模拟 " << simulationCount
+                                << " 中的第 " << gen + 1 << " 代" << std::endl;
+                            for (size_t step = 0; step < simulationHistory.size(); ++step) {
+                                if (!isPrinted) {
+                                    std::cout << "第 " << step << " 代:" << std::endl;
+                                    simulationHistory[step].printGrid();
+                                }
+                            }
+                            isPrinted = true;
+                            return true;
                         }
-                        return true;
                     }
                 }
                 else {
@@ -108,5 +118,35 @@ bool PatternDetector::detectPatternSequence(const std::vector<Pattern>& patternS
             }
         }
     }
+    isDetected = false;
+    return false;
+}
+
+
+bool PatternDetector::detectFirstPattern(const std::vector<Pattern>& sequence1, const std::vector<Pattern>& sequence2, int generations, int startCells) {
+    // Use async to run both pattern detections in parallel
+    auto future1 = std::async(&PatternDetector::detectPatternSequence, this, sequence1, generations, startCells);
+    auto future2 = std::async(&PatternDetector::detectPatternSequence, this, sequence2, generations, startCells);
+
+    // Wait for either of the pattern detection tasks to complete
+    while (future1.wait_for(std::chrono::milliseconds(10)) != std::future_status::ready &&
+        future2.wait_for(std::chrono::milliseconds(10)) != std::future_status::ready) {
+        // Keep checking until one of them finishes
+    }
+
+    // Check which pattern detected first
+    //if (future1.wait_for(std::chrono::milliseconds(0)) == std::future_status::ready) {
+    //    if (future1.get()) {
+    //        std::cout << "Pattern Sequence 1 detected first!" << std::endl;
+    //        return true;
+    //    }
+    //}
+    //if (future2.wait_for(std::chrono::milliseconds(0)) == std::future_status::ready) {
+    //    if (future2.get()) {
+    //        std::cout << "Pattern Sequence 2 detected first!" << std::endl;
+    //        return false;
+    //    }
+    //}
+
     return false;
 }
