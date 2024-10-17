@@ -134,19 +134,20 @@ bool PatternDetector::detectFirstPattern(const std::vector<Pattern>& sequence1, 
         // Keep checking until one of them finishes
     }
 
-    // Check which pattern detected first
-    //if (future1.wait_for(std::chrono::milliseconds(0)) == std::future_status::ready) {
-    //    if (future1.get()) {
-    //        std::cout << "Pattern Sequence 1 detected first!" << std::endl;
-    //        return true;
-    //    }
-    //}
-    //if (future2.wait_for(std::chrono::milliseconds(0)) == std::future_status::ready) {
-    //    if (future2.get()) {
-    //        std::cout << "Pattern Sequence 2 detected first!" << std::endl;
-    //        return false;
-    //    }
-    //}
+    //Check which pattern detected first
+    bool result1 = future1.get();
+    bool result2 = future2.get();
+
+    if (result1) {
+        std::cout << "Pattern Sequence 1 detected first!" << std::endl;
+        return true;
+    }
+    if (result2) {
+        std::cout << "Pattern Sequence 2 detected first!" << std::endl;
+        return false;
+    }
+
+    std::cout << "Neither pattern detected!" << std::endl;
 
     return false;
 }

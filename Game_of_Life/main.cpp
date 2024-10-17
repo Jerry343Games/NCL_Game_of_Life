@@ -2,6 +2,7 @@
 #include "Pattern.h"
 #include "PatternEnum.h"
 #include "PatternDetector.h"
+#include "ERNModule.h"
 #include <iostream>
 #include <thread>
 #include <future>
@@ -26,7 +27,8 @@ int main() {
         std::cout << "2. Searching pattern Block & Beehive" << std::endl;
         std::cout << "3. Searching pattern Blinker & Toad" << std::endl;
         std::cout << "4. Searching pattern Glider & Spaceship" << std::endl;
-        std::cout << "5. Exit program" << std::endl;
+        std::cout << "5. Caculate ERN by SequenceType" << std::endl;
+        std::cout << "6. Exit program" << std::endl;
         std::cout << "Please choose an option (1-3):\n";
 
         int choice;
@@ -42,26 +44,39 @@ int main() {
         }
         case 2: {
             PatternDetector detector(grid);
-            if (detector.detectFirstPattern(getPatternSequence(SequenceType::BLOCK), getPatternSequence(SequenceType::BEEHIVE), 30, 30)) {
-                std::cout << "Block sequence detected first!" << std::endl;
-            }
+            detector.detectFirstPattern(getPatternSequence(SequenceType::BLOCK), getPatternSequence(SequenceType::BEEHIVE), 30, 30);
+
             break;
         }
         case 3: {
             PatternDetector detector(grid);
-            if (detector.detectFirstPattern(getPatternSequence(SequenceType::TOAD), getPatternSequence(SequenceType::BLINKER), 30, 30)) {
-                std::cout << "Toad sequence detected first!" << std::endl;
-            }
+            detector.detectFirstPattern(getPatternSequence(SequenceType::TOAD), getPatternSequence(SequenceType::BLINKER), 30, 30);
+
             break;
         }
         case 4: {
             PatternDetector detector(grid);
-            if (detector.detectFirstPattern(getPatternSequence(SequenceType::GLIDER), getPatternSequence(SequenceType::SPACESHIP), 30, 30)) {
-                std::cout << "Glider sequence detected first!" << std::endl;
-            }
+            detector.detectFirstPattern(getPatternSequence(SequenceType::GLIDER), getPatternSequence(SequenceType::SPACESHIP), 30, 30);
             break;
         }
-        case 5:
+        case 5: {
+            SequenceType glider = SequenceType::TOAD;
+            int gliderMaxCells = getMaxGrid(glider);
+            int gliderMinCells = getMinCells(glider);
+
+            std::cout << "Glider最大活细胞数: " << gliderMaxCells << std::endl;
+            std::cout << "Glider最小活细胞数: " << gliderMinCells << std::endl;
+
+            SequenceType spaceship = SequenceType::SPACESHIP;
+            int spaceshipMaxCells = getMaxGrid(spaceship);
+            int spaceshipMinCells = getMinCells(spaceship);
+
+            std::cout << "Spaceship最大活细胞数: " << spaceshipMaxCells << std::endl;
+            std::cout << "Spaceship最小活细胞数: " << spaceshipMinCells << std::endl;
+            running = false;
+            break;
+        }
+        case 6:
             running = false;
             break;
         default:
