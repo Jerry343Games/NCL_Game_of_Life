@@ -5,5 +5,7 @@
 
 int getMaxGrid(SequenceType sequenceType);
 int getMinCells(SequenceType sequenceType);
+std::pair<int, int> getMaxRowCol(SequenceType sequenceType);
+int findMinCellsForPattern(int rows, int cols, int minCells, SequenceType sequenceType);
 
 #endif // ERN_MODULE_H

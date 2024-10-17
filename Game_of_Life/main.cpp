@@ -60,20 +60,10 @@ int main() {
             break;
         }
         case 5: {
-            SequenceType glider = SequenceType::TOAD;
-            int gliderMaxCells = getMaxGrid(glider);
-            int gliderMinCells = getMinCells(glider);
-
-            std::cout << "Glider最大活细胞数: " << gliderMaxCells << std::endl;
-            std::cout << "Glider最小活细胞数: " << gliderMinCells << std::endl;
-
-            SequenceType spaceship = SequenceType::SPACESHIP;
-            int spaceshipMaxCells = getMaxGrid(spaceship);
-            int spaceshipMinCells = getMinCells(spaceship);
-
-            std::cout << "Spaceship最大活细胞数: " << spaceshipMaxCells << std::endl;
-            std::cout << "Spaceship最小活细胞数: " << spaceshipMinCells << std::endl;
-            running = false;
+            SequenceType block = SequenceType::TOAD;
+            //std::cout << getMaxRowCol(block).first <<" "<<getMaxRowCol(block).second << std::endl;
+            int minCell = findMinCellsForPattern(getMaxRowCol(block).first, getMaxRowCol(block).second, 3, block);
+            std::cout << minCell << std::endl;
             break;
         }
         case 6:
