@@ -61,12 +61,12 @@ bool PatternDetector::detectPatternSequence(const std::vector<Pattern>& patternS
     int sequenceIndex = 0;
     int simulationCount = 0;
     bool patternLocked = false;
-    //isDetected = false;
-
+    Grid initialGrid = grid;
+    grid.clearGrid();
     while (true && !isDetected) {
         simulationCount++;
         grid.randomizeCells(startCells);
-
+        initialGrid = grid;// Save initial state before the simulation starts
         std::vector<Grid> simulationHistory;
         simulationHistory.push_back(grid);  // Save initial state
 
@@ -74,7 +74,7 @@ bool PatternDetector::detectPatternSequence(const std::vector<Pattern>& patternS
             grid.evolve();
             simulationHistory.push_back(grid);  // Save state after each evolution
 
-            // If no locked point yet, perform a global search
+            // If no lock point yet, perform a global search
             if (!patternLocked) {
                 for (int i = 0; i < grid.getRowCount(); ++i) {
                     for (int j = 0; j < grid.getColCount(); ++j) {
@@ -96,6 +96,10 @@ bool PatternDetector::detectPatternSequence(const std::vector<Pattern>& patternS
                     sequenceIndex++;
                     if (sequenceIndex == patternSequence.size() && !isDetected) {
                         isDetected = true;
+
+                        // Save initial grid state when the pattern sequence is detected
+                        initialGrid.saveGridToFile("AutoSave_" + std::to_string(simulationCount) + ".txt");
+
                         if (!isPrinted) {
                             std::cout << "Successfully detected the pattern sequence in simulation " << simulationCount
                                 << " at generation " << gen + 1 << std::endl;
@@ -121,13 +125,12 @@ bool PatternDetector::detectPatternSequence(const std::vector<Pattern>& patternS
     return false;
 }
 
+
 bool PatternDetector::detectFirstPattern(SequenceType sequenceType1, SequenceType sequenceType2, int generations, int startCells) {
     // Get the pattern sequences for both input SequenceTypes
     std::vector<Pattern> sequence1 = getPatternSequence(sequenceType1);
     std::vector<Pattern> sequence2 = getPatternSequence(sequenceType2);
 
-    // Save the initial grid state before the simulation
-    Grid initialGrid = grid;  // Assuming you have a proper copy constructor for Grid
 
     // Use async to run both pattern detections in parallel
     auto future1 = std::async(&PatternDetector::detectPatternSequence, this, sequence1, generations, startCells);
@@ -143,13 +146,11 @@ bool PatternDetector::detectFirstPattern(SequenceType sequenceType1, SequenceTyp
     if (result1) {
         std::cout << "Pattern Sequence " << sequenceToString(sequenceType1) << " detected first!" << std::endl;
         // Save the initial grid state to a file when detection is successful
-        initialGrid.saveGridToFile("AutoSave_" + sequenceToString(sequenceType1) + ".txt");
         return true;
     }
     if (result2) {
         std::cout << "Pattern Sequence " << sequenceToString(sequenceType2) << " detected first!" << std::endl;
         // Save the initial grid state to a file when detection is successful
-        initialGrid.saveGridToFile("AutoSave_" + sequenceToString(sequenceType2) + ".txt");
         return false;
     }
 

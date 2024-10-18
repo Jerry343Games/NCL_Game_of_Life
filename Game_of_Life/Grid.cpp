@@ -118,7 +118,6 @@ void Grid::setCellState(int row, int col, int state) {
 // Evolution step
 void Grid::evolve() {
     std::vector<std::vector<int>> newStates(rows, std::vector<int>(cols, 0));
-
     for (int i = 0; i < rows; ++i) {
         for (int j = 0; j < cols; ++j) {
             int liveNeighbors = 0;
