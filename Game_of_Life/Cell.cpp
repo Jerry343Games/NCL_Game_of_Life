@@ -1,13 +1,13 @@
 #include "Cell.h"
 #include <iostream>
 
-// Default constructor
-Cell::Cell() : state(0) {}  // By default, the state is a dead cell
+// default constructor
+Cell::Cell() : state(0) {} 
 
-// Constructor with initial state
+// constructor with initial state
 Cell::Cell(int initState) : state(initState) {}
 
-// Get cell state
+// get cell state
 int Cell::getState() const {
     return state;
 }

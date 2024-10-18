@@ -4,7 +4,7 @@
 #include <vector>
 #include "Cell.h"
 #include <string>;
-
+#include <iostream>
 class Grid {
 private:
     std::vector<std::vector<Cell>> cells;
@@ -13,16 +13,15 @@ private:
     std::vector<std::vector<int>> targetPattern; // 保存目标图案
 
 public:
-    // 构造函数
+
     Grid(int r, int c);
 
-    // 获取某个位置的细胞
+    // get cell by pos
     Cell& getCell(int row, int col);
 
-    // 设置某个位置的细胞状态
+    // set cell by pos
     void setCellState(int row, int col, int state);
 
-    // 打印当前网格状态
     void printGrid() const;
 
     void randomizeCells(int numberOfCells);
@@ -41,6 +40,8 @@ public:
 
     void loadGridFromFile(const std::string& filename);
 
+    friend std::ostream& operator<<(std::ostream& os, const Grid& grid);
+
 };
 
-#endif // GRID_H
+#endif

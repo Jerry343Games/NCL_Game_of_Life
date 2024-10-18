@@ -16,13 +16,13 @@ std::pair<int, int> getMaxRowCol(SequenceType sequenceType) {
 
     for (const Pattern& pattern : patterns) {
         for (const auto& offset : pattern.offsets) {
-            maxRow = std::max(maxRow, offset.first);  // Find the maximum row offset
-            maxCol = std::max(maxCol, offset.second);  // Find the maximum column offset
+            maxRow = std::max(maxRow, offset.first); 
+            maxCol = std::max(maxCol, offset.second);  
         }
     }
 
     // Return a pair containing the maximum row and column
-    return { maxRow + 1, maxCol + 1 };  // +1 because indexing starts from 0
+    return { maxRow + 1, maxCol + 1 };
 }
 
 // Get the minimum number of alive cells for a given SequenceType
@@ -31,7 +31,7 @@ int getMinCells(SequenceType sequenceType) {
     int minCells = INT_MAX;
 
     for (const Pattern& pattern : patterns) {
-        int cellCount = pattern.offsets.size();  // Calculate the number of alive cells in the current pattern
+        int cellCount = pattern.offsets.size(); 
         minCells = std::min(minCells, cellCount);  // Keep the minimum number of cells
     }
 
@@ -39,55 +39,72 @@ int getMinCells(SequenceType sequenceType) {
 }
 
 int findMinCellsForPattern(int rows, int cols, int minCells, SequenceType sequenceType) {
-    // Create a grid with the specified dimensions
+
     Grid grid(rows, cols);
     PatternDetector detector(grid);
 
-    // Get the target pattern sequence (we'll only check the first pattern in this example)
     std::vector<Pattern> patternSequence = getPatternSequence(sequenceType);
+    size_t patternCount = patternSequence.size();
 
-    // Iterate and increase the number of cells until the pattern is found
     int currentCells = minCells;
 
     while (true) {
         std::cout << "Trying with " << currentCells << " alive cells." << std::endl;
 
-        for (int attempt = 0; attempt < 1000000; ++attempt) {
-            // Clear the grid before starting a new attempt to avoid leftover cells
+        for (int attempt = 0; attempt < 100000; ++attempt) {
             grid.clearGrid();
-
-            // Randomly generate the current number of alive cells
             grid.randomizeCells(currentCells);
 
-            // Store the initial grid state for this attempt
-            std::vector<Grid> evolutionSteps;  // Vector to store each grid state
-            evolutionSteps.push_back(grid);    // Store the initial state
+            std::vector<Grid> evolutionSteps;
+            evolutionSteps.push_back(grid);
 
             // Run evolution for a fixed number of generations
             for (int gen = 0; gen < 20; ++gen) {
                 grid.evolve();
-                evolutionSteps.push_back(grid);  // Store each evolved state
+                evolutionSteps.push_back(grid);
 
-                // Check if the current grid matches the target pattern
-                if (detector.isPatternDetectedInGrid(patternSequence[0])) {
-                    std::cout << "Found the target pattern in attempt " << attempt + 1 << " with " << currentCells << " alive cells!" << std::endl;
+                // Loop through each possible starting point in the pattern sequence
+                for (size_t startPatternIndex = 0; startPatternIndex < patternCount; ++startPatternIndex) {
+                    bool fullCycleMatched = true;
 
-                    // Print the initial state of the grid
-                    std::cout << "Initial grid state for attempt " << attempt + 1 << ":" << std::endl;
-                    evolutionSteps[0].printGrid();  // Print the initial grid state
+                    // Check the full pattern cycle
+                    for (size_t step = 0; step < patternCount; ++step) {
+                        size_t currentPatternIndex = (startPatternIndex + step) % patternCount;
 
-                    // Print each evolution step
-                    for (int i = 1; i < evolutionSteps.size(); ++i) {
-                        std::cout << "Grid after generation " << i << ":" << std::endl;
-                        evolutionSteps[i].printGrid();  // Print each evolved state
+                        // If the current pattern is not detected, break the loop and continue with the next starting pattern
+                        if (!detector.isPatternDetectedInGrid(patternSequence[currentPatternIndex])) {
+                            fullCycleMatched = false;
+                            break;
+                        }
+
+                        // Evolve the grid further for each pattern check
+                        if (step < patternCount - 1) {
+                            grid.evolve();
+                            evolutionSteps.push_back(grid);
+                        }
                     }
 
-                    return currentCells;  // Return the number of cells when the pattern is found
+                    // If a full cycle is matched, output the results
+                    if (fullCycleMatched) {
+                        std::cout << "Full pattern cycle detected starting from step " << startPatternIndex
+                            << " in attempt " << attempt + 1 << " with " << currentCells << " alive cells!" << std::endl;
+
+                        std::cout << "Initial grid state for attempt " << attempt + 1 << ":" << std::endl;
+                        std::cout << evolutionSteps[0];  
+
+                        // Print each evolution step
+                        for (int i = 1; i < evolutionSteps.size(); ++i) {
+                            std::cout << "Grid after generation " << i << ":" << std::endl;
+                            std::cout << evolutionSteps[i]; 
+                        }
+
+                        return currentCells;
+                    }
                 }
             }
         }
 
-        // If the pattern isn't found after 100 attempts, increase the number of alive cells
+        // increase the number of trying alive cells if over 1,000,000 times attempt
         currentCells++;
     }
 }

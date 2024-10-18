@@ -94,8 +94,9 @@ inline std::vector<Pattern> getPatternSequence(SequenceType sequenceType) {
         };
     case SequenceType::TOAD:
         return{
+            {getPatternOffsets(PatternType::TOAD_1)},
             {getPatternOffsets(PatternType::TOAD_0)},
-            {getPatternOffsets(PatternType::TOAD_1)}
+            //{getPatternOffsets(PatternType::TOAD_1)}
         };
     case SequenceType::GLIDER:
         return {

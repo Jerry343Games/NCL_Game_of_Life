@@ -145,12 +145,10 @@ bool PatternDetector::detectFirstPattern(SequenceType sequenceType1, SequenceTyp
 
     if (result1) {
         std::cout << "Pattern Sequence " << sequenceToString(sequenceType1) << " detected first!" << std::endl;
-        // Save the initial grid state to a file when detection is successful
         return true;
     }
     if (result2) {
         std::cout << "Pattern Sequence " << sequenceToString(sequenceType2) << " detected first!" << std::endl;
-        // Save the initial grid state to a file when detection is successful
         return false;
     }
 
@@ -166,9 +164,9 @@ bool PatternDetector::isPatternDetectedInGrid(const Pattern& pattern) {
     for (int row = 0; row < grid.getRowCount(); ++row) {
         for (int col = 0; col < grid.getColCount(); ++col) {
             if (isPatternAt(row, col, pattern)) {
-                return true;  // Pattern found
+                return true;
             }
         }
     }
-    return false;  // Pattern not found
+    return false;
 }

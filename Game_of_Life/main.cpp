@@ -22,7 +22,7 @@ int main() {
 
     bool running = true;
     while (running) {
-        std::cout << "\n============ Function Menu =============" << std::endl;
+        std::cout << "\n============== Function Menu ==============" << std::endl;
         std::cout << "1. Start random evolution" << std::endl;
         std::cout << "2. Searching pattern Block & Beehive" << std::endl;
         std::cout << "3. Searching pattern Blinker & Toad" << std::endl;

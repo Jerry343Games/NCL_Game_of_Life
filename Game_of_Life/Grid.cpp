@@ -197,17 +197,15 @@ void Grid::startRandomEvolution(int steps, int delay) {
         // Clear the screen (Windows specific; adapt for other platforms)
         system("cls");
 
-        // Print the current grid state
         printGrid();
 
-        // Evolve to the next generation
         evolve();
 
-        // Pause for the specified delay (milliseconds)
+        // Pause a while
         std::this_thread::sleep_for(std::chrono::milliseconds(delay));
 
         // Check if the user wants to pause and save
-        if (_kbhit()) {  // Check for a key press (Windows specific)
+        if (_kbhit()) {  
             char key = _getch();
             if (key == 'p' || key == 'P') {
                 std::cout << "\nPaused.\nPress M back to Menu\nDo you want to save the grid state? (y/n):\n ";
@@ -227,7 +225,7 @@ void Grid::startRandomEvolution(int steps, int delay) {
                 }
 
                 std::cout << "Press any key to resume the evolution..." << std::endl;
-                _getch();  // Wait for user to press any key to resume
+                _getch();  
             }
         }
     }
@@ -239,5 +237,26 @@ void Grid::clearGrid() {
             cells[i][j].setState(0);  // Set all cells to dead (0)
         }
     }
+}
+
+
+std::ostream& operator<<(std::ostream& os, const Grid& grid) {
+    // Print the first row of dots (border)
+    for (int j = 0; j <= grid.cols; ++j) {
+        os << ". ";
+    }
+    os << std::endl;
+
+    // Print each row of cells with dots at the boundaries
+    for (int i = 0; i < grid.rows; ++i) {
+        os << ".";
+        for (int j = 0; j < grid.cols; ++j) {
+            
+            os << (grid.cells[i][j].getState() == 1 ? "O" : " ") << ".";
+        }
+        os << std::endl;
+    }
+
+    return os;
 }
 
