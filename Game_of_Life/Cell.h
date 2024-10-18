@@ -3,7 +3,7 @@
 
 class Cell {
 private:
-    int state; // 0表示死细胞，1表示活细胞
+    int state; 
 
 public:
     

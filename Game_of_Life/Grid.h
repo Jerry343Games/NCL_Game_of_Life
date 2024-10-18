@@ -40,6 +40,7 @@ public:
 
     void loadGridFromFile(const std::string& filename);
 
+
     friend std::ostream& operator<<(std::ostream& os, const Grid& grid);
 
 };

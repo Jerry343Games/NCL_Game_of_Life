@@ -51,7 +51,7 @@ int findMinCellsForPattern(int rows, int cols, int minCells, SequenceType sequen
     while (true) {
         std::cout << "Trying with " << currentCells << " alive cells." << std::endl;
 
-        for (int attempt = 0; attempt < 100000; ++attempt) {
+        for (int attempt = 0; attempt < 500000; ++attempt) {
             grid.clearGrid();
             grid.randomizeCells(currentCells);
 

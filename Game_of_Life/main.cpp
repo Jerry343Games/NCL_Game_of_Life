@@ -74,14 +74,37 @@ int main() {
         }
         case 5: {
             std::string inputSequence;
-            std::cout << "Enter the sequence name (TOAD, BLOCK, BEEHIVE, BLINKER, GLIDER, LWSS): ";//
+            std::cout << "This may take a while and some attempts to find the minimum cell\nEnter the sequence name (TOAD, BLOCK, BEEHIVE, BLINKER, GLIDER, LWSS): ";//
             std::cin >> inputSequence;
 
             // Convert user input to SequenceType
             SequenceType sequence = getSequenceTypeFromInput(inputSequence);
-
+            int miniStartCell = 3;
+            switch (sequence)
+            {
+            case SequenceType::BLOCK:
+                miniStartCell = 3;
+                    break;
+            case SequenceType::BEEHIVE:
+                miniStartCell = 3;
+                break;
+            case SequenceType::BLINKER:
+                miniStartCell = 3;
+                break;
+            case SequenceType::TOAD:
+                miniStartCell = 3;
+                break;
+            case SequenceType::GLIDER:
+                miniStartCell = 4;
+                break;
+            case SequenceType::LWSS:
+                miniStartCell = 8;
+                break;
+            default:
+                break;
+            }
             // Calculate the minimum number of cells
-            int minCell = findMinCellsForPattern(getMaxRowCol(sequence).first, getMaxRowCol(sequence).second, 3, sequence);
+            int minCell = findMinCellsForPattern(getMaxRowCol(sequence).first, getMaxRowCol(sequence).second, miniStartCell, sequence);
 
             // Calculate the ERN
             int ERN = minCell + getMaxRowCol(sequence).first + getMaxRowCol(sequence).second;
